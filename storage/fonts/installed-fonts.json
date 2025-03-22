@@ -1,0 +1,16 @@
+{
+    "microsoftyahei": {
+        "normal": "microsoftyahei_normal_8f74cf9fe352e1fa011eae2d90110101"
+    },
+    "notosans": {
+        "normal": "notosans_normal_68428c5a1a3176c12ee9001677939bc3"
+    },
+    "notosanstc": {
+        "normal": "C:\\wamp64\\www\\ie\\storage\\fonts\/notosanstc_normal_56af17ba1614d453c4f3bb8a451bf4d8",
+        "bold": "notosanstc_bold_fb01834b7268fb17032f6d4ebb7575ca"
+    },
+    "notosanssc": {
+        "bold": "C:\\wamp64\\www\\ie\\storage\\fonts\/notosanssc_bold_10ad3894fe405f95a93063c49d9806c8",
+        "normal": "notosanssc_normal_934aeb411ea3b35d98f0307ebdadad57"
+    }
+}
