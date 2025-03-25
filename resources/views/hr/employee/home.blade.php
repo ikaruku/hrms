@@ -80,21 +80,6 @@
               <a href="{{url('/hr/employee/pastworker')}}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
           </div>
-          <div class="col-12">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Title</h5>
-
-                <p class="card-text">
-                  Sample Text
-                </p>
-
-                <a href="#" class="card-link">Card link</a>
-                <a href="#" class="card-link">Another link</a>
-              </div>
-            </div>
-            <!-- /.card -->
-          </div>
           <!-- /.col -->
         </div>
         <!-- /.row -->

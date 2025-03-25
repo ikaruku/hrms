@@ -90,28 +90,38 @@
                   </div>
                 </div>
               </div>
-              <!-- /.card-header -->
+              <div class="card-header">
+                <!-- Form untuk memilih apakah ingin melihat semua karyawan atau hanya yang aktif -->
+                <form method="GET" action="{{ url('/hr/attendance/record') }}">
+                  <label><input type="checkbox" name="active" {{ request('active') == 'on' ? 'checked' : '' }}> Show All Employees </label>
+                  <button type="submit" class="btn btn-info">Filter</button>
+                </form>
+              </div>
               <div class="card-body">
+                <!-- Tabel Data Karyawan -->
                 <table id="example1" class="table table-bordered table-striped">
-                <thead>
-                  <tr>
-                    <th>Empl ID</th>
-                    <th>Empl Name</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @foreach($empllist as $r)
-                  <tr>
-                    <td>{{ $r->emplid }}</td>
-                    <td>{{ $r->emplname }}</td>
-                    <td>
-                      <a href="{{url('/hr/attendance/record\/')}}{{ $r->emplid }}">
-                        <button type="button" class="btn btn-info btn-sm">Detail</button>
-                      </a>
-                    </td>
-                  </tr>
-                  @endforeach
+                    <thead>
+                      <tr>
+                        <th>Empl ID</th>
+                        <th>Empl Name</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @foreach($empllist as $r)
+                        <tr>
+                          <td>{{ $r->emplid }}</td>
+                          <td>{{ $r->emplname }}</td>
+                          <td>{{ $r->status }}</td>
+                          <td>
+                            <a href="{{ url('/hr/attendance/record/' . $r->emplid) }}">
+                              <button type="button" class="btn btn-info btn-sm">Detail</button>
+                            </a>
+                          </td>
+                        </tr>
+                      @endforeach
+                    </tbody>
                 </table>
               </div>
               <!-- /.card-body -->

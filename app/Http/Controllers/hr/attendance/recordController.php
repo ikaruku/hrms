@@ -16,12 +16,27 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
  
 class recordController extends Controller
 {
-    public function index()
-	{
-        $menus = DB::table('syspermission')->where('userid',Auth::user()->id)->get()->sortBy('menuname');
-		$empllist = DB::table('hr_empltable')->where('status','Active')->orderBy('emplname')->get();
-		return view('hr/attendance/record',compact('empllist','menus'));
-	}
+    public function index(Request $request)
+    {
+        $menus = DB::table('syspermission')
+                    ->where('userid', Auth::user()->id)
+                    ->get()
+                    ->sortBy('menuname');
+        
+        // Menambahkan filter berdasarkan status karyawan
+        $empllist = DB::table('hr_empltable');
+    
+        // Jika checkbox "Show All Employees" dicentang, tampilkan semua karyawan
+        if ($request->has('active') && $request->active == 'on') {
+            $empllist = $empllist->get(); // Ambil semua data karyawan
+        } else {
+            // Jika checkbox tidak dicentang, hanya karyawan aktif yang ditampilkan
+            $empllist = $empllist->where('status', 'active')->get();
+        }
+    
+        return view('hr/attendance/record', compact('empllist', 'menus'));
+    }
+    
 
     public function indexdetail($id)
 	{
@@ -54,8 +69,18 @@ class recordController extends Controller
         }
 
         // Ambil semua karyawan yang memiliki schedule_id
-        $employees = DB::table('hr_empltable')->where('status', 'Active')->get();
-
+        $employees = DB::table('hr_empltable')
+            ->where(function($query) use ($month, $year) {
+                $query->whereMonth('leavedate', '>=', $month)
+                    ->whereYear('leavedate', '>=', $year);
+            })
+            ->orWhere(function($query) use ($month, $year) {
+                $query->where('status', 'active')
+                    ->whereMonth('joindate', '<=', $month)
+                    ->whereYear('joindate', '<=', $year);
+            })
+            ->get();
+            
         // Tentukan hari pertama dan terakhir di bulan yang dipilih
         $startOfMonth = Carbon::create($year, $month, 1);
         $endOfMonth = $startOfMonth->copy()->endOfMonth();

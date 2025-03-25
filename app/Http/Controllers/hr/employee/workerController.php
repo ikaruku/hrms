@@ -18,8 +18,8 @@ class workerController extends Controller
 	{
         $menus = DB::table('syspermission')->where('userid',Auth::user()->id)->get()->sortBy('menuname');
     	// get data
-        $worker = DB::table('hr_empltable')->where('leavedate',null)->count();
-        $pastworker = DB::table('hr_empltable')->whereNotNull('leavedate')->count();
+        $worker = DB::table('hr_empltable')->where('status', 'Active')->orWhere('leavedate', '>=', today())->count();
+        $pastworker = DB::table('hr_empltable')->whereNot('status','Active')->count();
     	// sent to view
 		return view('hr/employee/home',compact('menus','worker','pastworker'));
 	}
@@ -28,10 +28,20 @@ class workerController extends Controller
 	{
         $menus = DB::table('syspermission')->where('userid',Auth::user()->id)->get()->sortBy('menuname');
     	// get data
-		$empllist = DB::table('hr_empltable')->where('leavedate',null)->get();
+		$empllist = DB::table('hr_empltable')->where('status', 'Active')->orWhere('leavedate', '>=', today())->get();
     	// sent to view
 		return view('hr/employee/worker',compact('empllist','menus'));
 	}
+
+	public function indexpast()
+	{
+        $menus = DB::table('syspermission')->where('userid',Auth::user()->id)->get()->sortBy('menuname');
+    	// get data
+		$empllist = DB::table('hr_empltable')->whereNot('status','Active')->get();
+    	// sent to view
+		return view('hr/employee/pastworker',compact('empllist','menus'));
+	}
+
     
     public function exportexcel()
     {
@@ -75,15 +85,6 @@ class workerController extends Controller
             ]
         );
     }
-
-	public function indexpast()
-	{
-        $menus = DB::table('syspermission')->where('userid',Auth::user()->id)->get()->sortBy('menuname');
-    	// get data
-		$empllist = DB::table('hr_empltable')->whereNotNull('leavedate')->get();
-    	// sent to view
-		return view('hr/employee/pastworker',compact('empllist','menus'));
-	}
 
     public function add(Request $request)
     {

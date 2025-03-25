@@ -5,6 +5,7 @@
 <!-- cara penulisan isi section yang pendek -->
 @section('title')
 <title>Admin | Dashboard</title>
+
 @endsection
 
 @section('navi')
@@ -29,7 +30,6 @@
   </li>
 @endsection
 
-<!-- isi bagian konten -->
 @section('content')
  <!-- Content Wrapper. Contains page content -->
  <div class="content-wrapper">
@@ -58,7 +58,7 @@
           <div class="col-lg-3 col-6"> 
             <div class="small-box bg-info">
               <div class="inner">
-                <h3>123</h3>
+                <h3>{{$enroll}}</h3>
                 <p>Enrolled Today</p>
               </div>
               <div class="icon">
@@ -71,7 +71,7 @@
           <div class="col-lg-3 col-6"> 
             <div class="small-box bg-success">
               <div class="inner">
-                <h3>123</h3>
+              <h3>{{$present}}</h3>
                 <p>Present Today</p>
               </div>
               <div class="icon">
@@ -84,7 +84,7 @@
           <div class="col-lg-3 col-6"> 
             <div class="small-box bg-danger">
               <div class="inner">
-                <h3>123</h3>
+              <h3>{{$absent}}</h3>
                 <p>Absent Today</p>
               </div>
               <div class="icon">
@@ -97,7 +97,7 @@
           <div class="col-lg-3 col-6"> 
             <div class="small-box bg-warning">
               <div class="inner">
-                <h3>123</h3>
+              <h3>{{$late}}</h3>
                 <p>Late Today</p>
               </div>
               <div class="icon">
@@ -109,7 +109,7 @@
                     
           <div class="col-lg-3">
             <div class="card">
-              <div class="card-header border-0">
+              <div class="card-header">
                 <h3 class="card-title">Period Generated</h3>
               </div>
               <div class="card-body table-responsive p-0">
@@ -132,6 +132,62 @@
               </div>
             </div>
           </div>
+          
+          <div class="col-lg-6">
+            <div class="card">
+              <div class="card-header border-0">
+                <div class="d-flex justify-content-between">
+                  <h3 class="card-title">Weekly Attendance</h3>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="d-flex">
+                  <p class="d-flex flex-column">
+                    <span class="text-bold text-lg">820</span>
+                    <span>Visitors Over Time</span>
+                  </p>
+                  <p class="ml-auto d-flex flex-column text-right">
+                    <span class="text-success">
+                      <i class="fas fa-arrow-up"></i> 12.5%
+                    </span>
+                    <span class="text-muted">Since last week</span>
+                  </p>
+                </div>
+                <!-- /.d-flex -->
+
+                <div class="position-relative mb-4">
+                  <canvas id="visitors-chart" height="200"></canvas>
+                </div>
+
+                <div class="d-flex flex-row justify-content-end">
+                  <span class="mr-2">
+                    <i class="fas fa-square text-primary"></i> This Week
+                  </span>
+
+                  <span>
+                    <i class="fas fa-square text-gray"></i> Last Week
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!--
+          <div class="col-lg-3">
+            <div class="card bg-gradient-success">
+              <div class="card-header border-0">
+                <h3 class="card-title">
+                  <i class="far fa-calendar-alt"></i>
+                  Calendar
+                </h3>
+              </div>
+              <div class="card-body pt-0">
+                <div id="calendar" style="width: 100%"></div>
+              </div>
+            </div>
+          </div>
+          -->
+          
           <!-- /.col -->
         </div>
         <!-- /.row -->
