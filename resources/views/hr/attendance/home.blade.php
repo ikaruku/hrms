@@ -30,7 +30,6 @@
 @endsection
 
 <!-- isi bagian konten -->
-<!-- cara penulisan isi section yang panjang -->
 @section('content')
  <!-- Content Wrapper. Contains page content -->
  <div class="content-wrapper">
@@ -39,7 +38,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Attendance</h1>
+            <h1 class="m-0">Attendance Dashboard</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -56,18 +55,58 @@
     <section class="content">
       <div class="container-fluid">
         <div class="row">
-          <div class="col-12">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Title</h5>
-                <p class="card-text">
-                  Sample Text
-                </p>
+          <div class="col-lg-3 col-6"> 
+            <div class="small-box bg-info">
+              <div class="inner">
+                <h3>123</h3>
+                <p>Enrolled Today</p>
               </div>
+              <div class="icon">
+                <i class="ion ion-person"></i>
+              </div>
+              <a href="" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
-            <!-- /.card -->
           </div>
           
+          <div class="col-lg-3 col-6"> 
+            <div class="small-box bg-success">
+              <div class="inner">
+                <h3>123</h3>
+                <p>Present Today</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-person"></i>
+              </div>
+              <a href="" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-6"> 
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>123</h3>
+                <p>Absent Today</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-person"></i>
+              </div>
+              <a href="" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-6"> 
+            <div class="small-box bg-warning">
+              <div class="inner">
+                <h3>123</h3>
+                <p>Late Today</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-person"></i>
+              </div>
+              <a href="" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+                    
           <div class="col-lg-3">
             <div class="card">
               <div class="card-header border-0">
