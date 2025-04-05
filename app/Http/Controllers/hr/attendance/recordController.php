@@ -305,7 +305,15 @@ class recordController extends Controller
         $month = $request->frml_month;
     
         // Ambil semua data karyawan
-        $karyawan = DB::table('hr_empltable')->where('status','Active')->orderBy('emplname', 'asc')->get();
+        //$karyawan = DB::table('hr_empltable')->where('status','Active')->orderBy('emplname', 'asc')->get();
+        $karyawan = $records = DB::table('hr_attendancerecord')
+            ->select('emplid', 'emplname')
+            ->whereMonth('attdate', $month)
+            ->whereYear('attdate', $year)
+            ->distinct()
+            ->orderBy('emplname', 'asc')
+            ->get();
+    
     
         // Buat objek Spreadsheet
         $spreadsheet = new Spreadsheet();
@@ -326,13 +334,15 @@ class recordController extends Controller
                 ->setCellValue('D1', 'Normal In')
                 ->setCellValue('E1', 'Normal Out')
                 ->setCellValue('F1', 'Actual In')
-                ->setCellValue('G1', 'Actual Out');
+                ->setCellValue('G1', 'Actual Out')
+                ->setCellValue('H1', 'Notes');
     
             // Ambil absensi karyawan menggunakan query builder
             $absensi = DB::table('hr_attendancerecord')
                         ->where('emplid', $k->emplid)
                         ->whereMonth('attdate', $month)
                         ->whereYear('attdate', $year)
+                        ->orderBy('attdate', 'asc')
                         ->get();
     
             $row = 2; // Mulai dari baris ke-2
@@ -361,147 +371,8 @@ class recordController extends Controller
                     ->setCellValue('D' . $row, $a->normalin1)
                     ->setCellValue('E' . $row, $a->normalout1)
                     ->setCellValue('F' . $row, $a->actin1)
-                    ->setCellValue('G' . $row, $a->actout1);
-    
-                // Hitung status absensi
-                if (isset($statusCount[$status])) {
-                    $statusCount[$status]++;
-                }
-    
-                $color = '';
-                // Tentukan warna berdasarkan status
-                if ($status == 'N') {
-                    $color = 'FAFAFA'; // Neutral (No Show)
-                } elseif ($status == 'Late' || $status == 'Early') {
-                    $color = 'B5828C'; // Purple
-                } elseif ($status == 'PH') {
-                    $color = 'E52020'; // Red
-                } elseif ($status == 'SD') {
-                    $color = '6A80B9'; // Blue
-                } elseif ($status == 'UL') {
-                    $color = 'EFB036'; // Yellow
-                } elseif ($status == 'AL') {
-                    $color = '543A14'; // Brown
-                } elseif ($status == 'ML') {
-                    $color = 'F2B28C'; // Pink
-                } elseif ($status == 'PG') {
-                    $color = 'FAD02E'; // Soft Yellow for Pregnant Leave (PG)
-                } elseif ($status == 'PD') {
-                    $color = 'F5CBA7'; // Light Beige for Period Leave (PD)
-                } elseif ($status == 'HD') {
-                    $color = 'A2D9CE'; // Light Teal for Half Day (HD)
-                } elseif ($status == 'A') {
-                    $color = '7D3C98'; // Dark Purple for Absent (A)
-                }
-
-                // Apply color styling if there is any
-                if ($color) {
-                    $sheet->getStyle('C' . $row)->applyFromArray([
-                        'fill' => [
-                            'fillType' => Fill::FILL_SOLID,
-                            'startColor' => ['rgb' => $color],
-                        ],
-                        'alignment' => [
-                            'horizontal' => Alignment::HORIZONTAL_CENTER,
-                        ]
-                    ]);
-                }
-                $row++;
-            }
-    
-            // Tambahkan summary di bawah data absensi (pindahkan ke kolom K dan L)
-            $summaryRow = 1;
-    
-            // Set summary for each status
-            foreach ($statusCount as $status => $count) {
-                $sheet->setCellValue('K' . $summaryRow, 'Total ' . $status)   // Total status di kolom K
-                    ->setCellValue('L' . $summaryRow, $count);
-                $summaryRow++;
-            }
-    
-            // Set sheet index
-            $sheetIndex++;
-        }
-    
-        // Set writer untuk format Excel
-        $writer = new Xlsx($spreadsheet);
-    
-        // Simpan file Excel di server atau bisa dikirim langsung ke browser
-        $filename = 'Absensi_Karyawan.xlsx';
-        $path = storage_path('app/public/' . $filename);
-    
-        $writer->save($path);
-    
-        // Mengirim file untuk diunduh
-        return response()->download($path)->deleteFileAfterSend(true);
-    }
-    
-    public function exportrecordovt(Request $request)
-    {
-        $emplid = $request->ovt_emplid;
-        $year = $request->ovt_year;
-        $month = $request->ovt_month;
-    
-        // Ambil semua data karyawan
-        $karyawan = DB::table('hr_empltable')->where('status','Active')->orderBy('emplname', 'asc')->get();
-    
-        // Buat objek Spreadsheet
-        $spreadsheet = new Spreadsheet();
-    
-        // Set default sheet index
-        $spreadsheet->removeSheetByIndex(0); // Hapus sheet default pertama
-        $sheetIndex = 0;
-    
-        foreach ($karyawan as $k) {
-            // Tambahkan sheet baru untuk setiap karyawan
-            $sheet = $spreadsheet->createSheet();
-            $sheet->setTitle($k->emplname); // Nama sheet adalah nama karyawan
-    
-            // Set header untuk sheet
-            $sheet->setCellValue('A1', 'Tanggal')
-                ->setCellValue('B1', 'Hari')
-                ->setCellValue('C1', 'Status')
-                ->setCellValue('D1', 'Normal In')
-                ->setCellValue('E1', 'Normal Out')
-                ->setCellValue('F1', 'Actual In')
-                ->setCellValue('G1', 'Actual Out')
-                ->setCellValue('H1', 'Overtime Hour')
-                ->setCellValue('I1', 'Overtime Index');
-    
-            // Ambil absensi karyawan menggunakan query builder
-            $absensi = DB::table('hr_attendancerecord')
-                        ->where('emplid', $k->emplid)
-                        ->whereMonth('attdate', $month)
-                        ->whereYear('attdate', $year)
-                        ->get();
-    
-            $row = 2; // Mulai dari baris ke-2
-            $statusCount = [
-                'N' => 0,
-                'Early' => 0,
-                'Late' => 0,
-                'SD' => 0,
-                'UL' => 0,
-                'AL' => 0,
-                'ML' => 0,
-                'PG' => 0,
-                'MD' => 0,
-                'HD' => 0,
-                'A' => 0
-            ];
-    
-            foreach ($absensi as $a) {
-                // Cek apakah status absensi kosong, jika kosong set status ke 'Unknown'
-                $status = isset($a->attstatus) ? $a->attstatus : 'A';
-    
-                // Isi data absensi
-                $sheet->setCellValue('A' . $row, $a->attdate)
-                    ->setCellValue('B' . $row, $a->day)
-                    ->setCellValue('C' . $row, $status)
-                    ->setCellValue('D' . $row, $a->normalin1)
-                    ->setCellValue('E' . $row, $a->normalout1)
-                    ->setCellValue('F' . $row, $a->actin1)
-                    ->setCellValue('G' . $row, $a->actout1);
+                    ->setCellValue('G' . $row, $a->actout1)
+                    ->setCellValue('H' . $row, $a->notes);
     
                 // Hitung status absensi
                 if (isset($statusCount[$status])) {
