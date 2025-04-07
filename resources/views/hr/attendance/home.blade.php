@@ -137,7 +137,7 @@
             <div class="card">
               <div class="card-header border-0">
                 <div class="d-flex justify-content-between">
-                  <h3 class="card-title">Weekly Attendance</h3>
+                  <h3 class="card-title">Last 7 Days Attendance</h3>
                 </div>
               </div>
               <div class="card-body">
@@ -165,6 +165,10 @@
       var lineChartCanvas = $('#lineChart').get(0).getContext('2d');
       
       var lineChartData = {!! json_encode($dataAbsensi) !!};
+      
+      lineChartData.datasets.forEach(function(dataset) {
+          dataset.tension = 0;  // Menonaktifkan interpolasi spline (garis lurus)
+      });
 
       var lineChartOptions = {
           maintainAspectRatio : false,
@@ -212,6 +216,8 @@
               <tr>
                 <th>Employee ID</th>
                 <th>Employee Name</th>
+                <th>Status</th>
+                <th>Notes</th>
               </tr>
             </thead>
             <tbody>
@@ -219,6 +225,8 @@
               <tr>
                 <td>{{ $r->emplid }}</td>
                 <td>{{ $r->emplname }}</td>
+                <td>{{ $r->attstatus }}</td>
+                <td>{{ $r->notes }}</td>
               </tr>
               @endforeach
             </tbody>

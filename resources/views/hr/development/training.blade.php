@@ -96,7 +96,7 @@
 <div class="modal fade" id="modal-add">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
-      <form action="{{url('/hr/training/add')}}" method="post">
+      <form action="{{url('/hr/development/training/add')}}" method="post">
         <div class="modal-header">
           <h4 class="modal-title">Add Data</h4>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -151,7 +151,7 @@
         </button>
       </div>
       <!-- form start -->
-      <form action="{{url('/hr/training/update')}}" method="post">
+      <form action="{{url('/hr/development/training/update')}}" method="post">
         <div class="modal-body">
         <!-- general form elements -->
           <div class="card card-primary">

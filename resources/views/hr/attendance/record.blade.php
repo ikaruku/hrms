@@ -75,7 +75,7 @@
                       <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modal-generate">Generate Schedule</button>
                       <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modal-import">Import Data</button>
                       <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modal-leave">Sync with Leave Data</button>
-                      <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modal-overtime">Sync with Overtime Data</button>
+                      <!-- <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modal-overtime">Sync with Overtime Data</button>-->
                     </div>
                   </div>
                   <!-- Export Button -->
@@ -85,7 +85,7 @@
                     </button>
                     <div class="dropdown-menu">
                       <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modal-export">Export Data</button>
-                      <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modal-exportovt">Export Data with Overtime</button>
+                      <!-- <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modal-exportovt">Export Data with Overtime</button>-->
                     </div>
                   </div>
                 </div>
