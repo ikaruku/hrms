@@ -16,7 +16,7 @@ class attendanceController extends Controller
 
         $enroll = DB::table('hr_empltable')->where('status', 'Active')->orWhere('leavedate', '>=', today())->count();
         $present = DB::table('hr_attendancerecord')->where('attdate', today())->where('attstatus', ['N', 'HD'])->count();
-        $absent = DB::table('hr_attendancerecord')->where('attdate', today())->where('attstatus', 'A')->count();
+        $absent = DB::table('hr_attendancerecord')->where('attdate', today())->where('attstatus', 'A')->get();
         $late = DB::table('hr_attendancerecord')->where('attdate', today())->where('attstatus', 'Late')->count();
 		$generated = DB::table('hr_attendancegenerated')->where('year', '=', date('Y'))->get();
 

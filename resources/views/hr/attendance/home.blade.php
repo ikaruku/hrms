@@ -84,13 +84,13 @@
           <div class="col-lg-3 col-6"> 
             <div class="small-box bg-danger">
               <div class="inner">
-              <h3>{{$absent}}</h3>
+              <h3>{{$absent->count()}}</h3>
                 <p>Absent Today</p>
               </div>
               <div class="icon">
                 <i class="ion ion-person"></i>
               </div>
-              <a href="" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+              <a href="" data-toggle="modal" data-target="#modal-absent" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
           </div>
 
@@ -147,23 +147,6 @@
               </div>
             </div>
           </div>
-
-          <!--
-          <div class="col-lg-3">
-            <div class="card bg-gradient-success">
-              <div class="card-header border-0">
-                <h3 class="card-title">
-                  <i class="far fa-calendar-alt"></i>
-                  Calendar
-                </h3>
-              </div>
-              <div class="card-body pt-0">
-                <div id="calendar" style="width: 100%"></div>
-              </div>
-            </div>
-          </div>
-          -->
-          
           <!-- /.col -->
         </div>
         <!-- /.row -->
@@ -178,37 +161,79 @@
 <!-- ChartJS -->
 <script src="{{url('/plugins/chart.js/Chart.min.js')}}"></script>
 <script>
-        $(function () {
-            var lineChartCanvas = $('#lineChart').get(0).getContext('2d');
-            
-            var lineChartData = {!! json_encode($dataAbsensi) !!};
+  $(function () {
+      var lineChartCanvas = $('#lineChart').get(0).getContext('2d');
+      
+      var lineChartData = {!! json_encode($dataAbsensi) !!};
 
-            var lineChartOptions = {
-                maintainAspectRatio : false,
-                responsive : true,
-                legend: {
-                    display: true
-                },
-                scales: {
-                    xAxes: [{
-                        gridLines : {
-                            display : false,
-                        }
-                    }],
-                    yAxes: [{
-                        gridLines : {
-                            display : false,
-                        }
-                    }]
-                }
-            };
+      var lineChartOptions = {
+          maintainAspectRatio : false,
+          responsive : true,
+          legend: {
+              display: true
+          },
+          scales: {
+              xAxes: [{
+                  gridLines : {
+                      display : false,
+                  }
+              }],
+              yAxes: [{
+                  gridLines : {
+                      display : false,
+                  }
+              }]
+          }
+      };
 
-            new Chart(lineChartCanvas, {
-                type: 'line',
-                data: lineChartData,
-                options: lineChartOptions
-            });
-        });
-    </script>
+      new Chart(lineChartCanvas, {
+          type: 'line',
+          data: lineChartData,
+          options: lineChartOptions
+      });
+  });
+</script>
+
+
+<div class="modal fade" id="modal-absent">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Absent Data</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="card card-primary">
+        <div class="modal-body">
+          <table id="example1" class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>Employee ID</th>
+                <th>Employee Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              @foreach($absent as $r)
+              <tr>
+                <td>{{ $r->emplid }}</td>
+                <td>{{ $r->emplname }}</td>
+              </tr>
+              @endforeach
+            </tbody>
+          </table>
+          </div>
+        </div>
+        <!-- /.card -->
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
 
 @endsection
