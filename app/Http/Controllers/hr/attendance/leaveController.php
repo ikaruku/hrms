@@ -1,27 +1,27 @@
 <?php
- 
+
 namespace App\Http\Controllers\hr\attendance;
- 
+
 use Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
- 
- 
+
+
 class leaveController extends Controller
 {
-	public function index()
-	{
-        $menus = DB::table('syspermission')->where('userid',Auth::user()->id)->get()->sortBy('menuname');
-		$leavelist = DB::table('hr_leavereq')->get();
-		$empllist = DB::table('hr_empltable')->where('status','Active')->orderBy('emplname')->get();
-		return view('hr/attendance/leave',compact('leavelist','menus','empllist'));
-	}
+    public function index()
+    {
+        $menus = DB::table('syspermission')->where('userid', Auth::user()->id)->get()->sortBy('menuname');
+        $leavelist = DB::table('hr_leavereq')->get();
+        $empllist = DB::table('hr_empltable')->where('status', 'Active')->orderBy('emplname')->get();
+        return view('hr/attendance/leave', compact('leavelist', 'menus', 'empllist'));
+    }
 
     public function add(Request $request)
     {
-        $empllist = DB::table('hr_empltable')->where('emplid',$request->frm_emplid)->first();
+        $empllist = DB::table('hr_empltable')->where('emplid', $request->frm_emplid)->first();
         DB::table('hr_leave')->insert([
             'emplid' => $request->frm_emplid,
             'emplname' => $empllist->emplname,
@@ -38,7 +38,7 @@ class leaveController extends Controller
 
         // Ambil semua tanggal libur dari tabel 'holidays' sebagai array
         $holidays = DB::table('hr_holiday')->pluck('holidaydate')->toArray(); // Mengambil tanggal libur
-        $emplname = DB::table('hr_empltable')->where('emplid',$request->frm_emplid)->first();
+        $emplname = DB::table('hr_empltable')->where('emplid', $request->frm_emplid)->first();
 
         // Touch record untuk membuat Leave ID
         $newleaveid = $this->generateCode();
@@ -63,7 +63,7 @@ class leaveController extends Controller
             // Pindah ke hari berikutnya
             $timein->addDay();
         }
-        
+
         DB::table('hr_leavereq')->insert([
             'leaveid' => $newleaveid,
             'emplid' => $request->frm_emplid,
@@ -78,10 +78,10 @@ class leaveController extends Controller
         return redirect('/hr/attendance/leave');
     }
 
-	public function delete($id)
+    public function delete($id)
     {
-        DB::table('hr_leavereq')->where('leaveid',$id)->delete();
-        DB::table('hr_leave')->where('leaveid',$id)->delete();
+        DB::table('hr_leavereq')->where('leaveid', $id)->delete();
+        DB::table('hr_leave')->where('leaveid', $id)->delete();
         return redirect('/hr/attendance/leave');
     }
 
@@ -93,16 +93,16 @@ class leaveController extends Controller
 
         // Mengambil kode terakhir untuk bulan dan tahun yang sama dari tabel `hr_leave`
         $lastCode = DB::table('hr_leave')
-                    ->where('leaveid', 'like', "LV.$year$month%")
-                    ->orderBy('id', 'desc')
-                    ->first();
+            ->where('leaveid', 'like', "LV.$year$month%")
+            ->orderBy('id', 'desc')
+            ->first();
 
         // Tentukan counter default jika belum ada kode sebelumnya
         $counter = 1;
 
         if ($lastCode) {
             // Ambil urutan nomor terakhir
-            $counter = (int)substr($lastCode->leaveid, -4) + 1;
+            $counter = (int) substr($lastCode->leaveid, -4) + 1;
         }
 
         // Format urutan menjadi empat digit

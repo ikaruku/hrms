@@ -1,7 +1,7 @@
 <?php
- 
+
 namespace App\Http\Controllers\hr\employee;
- 
+
 use Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -14,35 +14,35 @@ use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 class workerController extends Controller
 {
     // method view from table
-	public function index()
-	{
-        $menus = DB::table('syspermission')->where('userid',Auth::user()->id)->get()->sortBy('menuname');
-    	// get data
+    public function index()
+    {
+        $menus = DB::table('syspermission')->where('userid', Auth::user()->id)->get()->sortBy('menuname');
+        // get data
         $worker = DB::table('hr_empltable')->where('status', 'Active')->orWhere('leavedate', '>=', today())->count();
-        $pastworker = DB::table('hr_empltable')->whereNot('status','Active')->count();
-    	// sent to view
-		return view('hr/employee/home',compact('menus','worker','pastworker'));
-	}
+        $pastworker = DB::table('hr_empltable')->whereNot('status', 'Active')->count();
+        // sent to view
+        return view('hr/employee/home', compact('menus', 'worker', 'pastworker'));
+    }
 
-	public function indexworker()
-	{
-        $menus = DB::table('syspermission')->where('userid',Auth::user()->id)->get()->sortBy('menuname');
-    	// get data
-		$empllist = DB::table('hr_empltable')->where('status', 'Active')->orWhere('leavedate', '>=', today())->get();
-    	// sent to view
-		return view('hr/employee/worker',compact('empllist','menus'));
-	}
+    public function indexworker()
+    {
+        $menus = DB::table('syspermission')->where('userid', Auth::user()->id)->get()->sortBy('menuname');
+        // get data
+        $empllist = DB::table('hr_empltable')->where('status', 'Active')->orWhere('leavedate', '>=', today())->get();
+        // sent to view
+        return view('hr/employee/worker', compact('empllist', 'menus'));
+    }
 
-	public function indexpast()
-	{
-        $menus = DB::table('syspermission')->where('userid',Auth::user()->id)->get()->sortBy('menuname');
-    	// get data
-		$empllist = DB::table('hr_empltable')->whereNot('status','Active')->get();
-    	// sent to view
-		return view('hr/employee/pastworker',compact('empllist','menus'));
-	}
+    public function indexpast()
+    {
+        $menus = DB::table('syspermission')->where('userid', Auth::user()->id)->get()->sortBy('menuname');
+        // get data
+        $empllist = DB::table('hr_empltable')->whereNot('status', 'Active')->get();
+        // sent to view
+        return view('hr/employee/pastworker', compact('empllist', 'menus'));
+    }
 
-    
+
     public function exportexcel()
     {
         // Ambil data dari database menggunakan DB Query
@@ -103,20 +103,20 @@ class workerController extends Controller
 
     public function detail($emplid)
     {
-        $menus = DB::table('syspermission')->where('userid',Auth::user()->id)->get()->sortBy('menuname');
-		$deptlist = DB::table('hr_depttable')->get();
-		$levellist = DB::table('hr_leveltable')->get();
-		$positionlist = DB::table('hr_positiontable')->get();
-		$attschedulelist = DB::table('hr_attendanceschedule')->get();
+        $menus = DB::table('syspermission')->where('userid', Auth::user()->id)->get()->sortBy('menuname');
+        $deptlist = DB::table('hr_depttable')->get();
+        $levellist = DB::table('hr_leveltable')->get();
+        $positionlist = DB::table('hr_positiontable')->get();
+        $attschedulelist = DB::table('hr_attendanceschedule')->get();
         // get data
-		$workeredit = DB::table('hr_empltable')->where('emplid',$emplid)->get();
-		$familylist = DB::table('hr_emplfamily')->where('emplid',$emplid)->get()->sortBy('familybirthdate');
-		$deptlevelpostrans = DB::table('hr_deptlevelpostrans')->where('emplid',$emplid)->get()->sortBy('startdate');
-    	// sent to view
-		return view('hr/employee/workeredit',compact('menus','workeredit','deptlist','levellist','positionlist','familylist','attschedulelist','deptlevelpostrans'));
-	}
+        $workeredit = DB::table('hr_empltable')->where('emplid', $emplid)->get();
+        $familylist = DB::table('hr_emplfamily')->where('emplid', $emplid)->get()->sortBy('familybirthdate');
+        $deptlevelpostrans = DB::table('hr_deptlevelpostrans')->where('emplid', $emplid)->get()->sortBy('startdate');
+        // sent to view
+        return view('hr/employee/workeredit', compact('menus', 'workeredit', 'deptlist', 'levellist', 'positionlist', 'familylist', 'attschedulelist', 'deptlevelpostrans'));
+    }
 
-	public function update(Request $request)
+    public function update(Request $request)
     {
         /*
         echo '<pre>';
@@ -131,19 +131,18 @@ class workerController extends Controller
             'photo.max' => 'Ukuran file tidak boleh lebih dari 2MB.',
         ]);
 
-        $workercheckfile = DB::table('hr_empltable')->where('emplid',$request->emplid)->first();
+        $workercheckfile = DB::table('hr_empltable')->where('emplid', $request->emplid)->first();
         //diubah kalo ada, kalo ga ada tetep
-        if($request->photo){
-            if($request->photo_prev){
+        if ($request->photo) {
+            if ($request->photo_prev) {
                 Storage::disk('public')->delete($workercheckfile->emplpicture);
             }
             $path = $request->file('photo')->store('photos/emplpicture', 'public');
-        }
-        else{
+        } else {
             $path = $request->photo_prev;
         }
 
-        DB::table('hr_empltable')->where('emplid',$request->emplid)->update([
+        DB::table('hr_empltable')->where('emplid', $request->emplid)->update([
             'emplpicture' => $path,
 
             'ktp' => $request->frm_ktp,
@@ -165,18 +164,19 @@ class workerController extends Controller
             'weekdayid' => $request->frm_weekday,
             'saturdayid' => $request->frm_saturday,
         ]);
-        
+
         return redirect()->action(
-            [workerController::class, 'detail'], ['id' => $request->emplid]
+            [workerController::class, 'detail'],
+            ['id' => $request->emplid]
         );
     }
 
-	public function delete($emplid)
+    public function delete($emplid)
     {
-        DB::table('hr_empltable')->where('emplid',$emplid)->delete();
+        DB::table('hr_empltable')->where('emplid', $emplid)->delete();
         return redirect('/hr/employee/worker');
     }
-    
+
     public function addfamily(Request $request)
     {
         // insert data to table
@@ -189,16 +189,18 @@ class workerController extends Controller
         // redirect to home
         //return redirect('/hr/worker');
         return redirect()->action(
-            [workerController::class, 'detail'], ['id' => $request->emplid]
+            [workerController::class, 'detail'],
+            ['id' => $request->emplid]
         );
     }
-    
-	public function deletefamily($id)
+
+    public function deletefamily($id)
     {
-        $empl = DB::table('hr_emplfamily')->where('id',$id)->first();
-        DB::table('hr_emplfamily')->where('id',$id)->delete();
+        $empl = DB::table('hr_emplfamily')->where('id', $id)->first();
+        DB::table('hr_emplfamily')->where('id', $id)->delete();
         return redirect()->action(
-            [workerController::class, 'detail'], ['id' => $empl->emplid]
+            [workerController::class, 'detail'],
+            ['id' => $empl->emplid]
         );
     }
 
@@ -217,7 +219,7 @@ class workerController extends Controller
         ]);
 
         //update to worker detail
-        DB::table('hr_empltable')->where('emplid',$request->emplid)->update([
+        DB::table('hr_empltable')->where('emplid', $request->emplid)->update([
             'deptid' => $request->frm_deptid,
             'deptname' => $request->frm_deptname,
             'levelid' => $request->frm_levelid,
@@ -227,16 +229,18 @@ class workerController extends Controller
         ]);
 
         return redirect()->action(
-            [workerController::class, 'detail'], ['id' => $request->emplid]
+            [workerController::class, 'detail'],
+            ['id' => $request->emplid]
         );
     }
 
     public function deleteorganization($id)
     {
-        $empl = DB::table('hr_deptlevelpostrans')->where('id',$id)->first();
-        DB::table('hr_deptlevelpostrans')->where('id',$id)->delete();
+        $empl = DB::table('hr_deptlevelpostrans')->where('id', $id)->first();
+        DB::table('hr_deptlevelpostrans')->where('id', $id)->delete();
         return redirect()->action(
-            [workerController::class, 'detail'], ['id' => $empl->emplid]
+            [workerController::class, 'detail'],
+            ['id' => $empl->emplid]
         );
     }
 }

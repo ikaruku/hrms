@@ -1,24 +1,24 @@
 <?php
- 
+
 namespace App\Http\Controllers\hr\attendance;
- 
+
 use Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
- 
- 
+
+
 class attendanceController extends Controller
 {
-	public function index()
-	{
-        $menus = DB::table('syspermission')->where('userid',Auth::user()->id)->get()->sortBy('menuname');
+    public function index()
+    {
+        $menus = DB::table('syspermission')->where('userid', Auth::user()->id)->get()->sortBy('menuname');
 
         $enroll = DB::table('hr_empltable')->where('status', 'Active')->orWhere('leavedate', '>=', today())->count();
         $present = DB::table('hr_attendancerecord')->where('attdate', today())->where('attstatus', ['N', 'HD'])->count();
         $absent = DB::table('hr_attendancerecord')->where('attdate', today())->where('attstatus', 'A')->get();
         $late = DB::table('hr_attendancerecord')->where('attdate', today())->where('attstatus', 'Late')->count();
-		$generated = DB::table('hr_attendancegenerated')->where('year', '=', date('Y'))->get();
+        $generated = DB::table('hr_attendancegenerated')->where('year', '=', date('Y'))->get();
 
         // Ambil data absensi untuk 7 hari terakhir
         $sevenDaysAgo = now()->subDays(7); // Mendapatkan tanggal 7 hari yang lalu
@@ -38,11 +38,11 @@ class attendanceController extends Controller
         for ($i = 6; $i >= 0; $i--) {
             $date = now()->subDays($i)->toDateString(); // Mengambil tanggal
             $labels[] = \Carbon\Carbon::parse($date)->isoFormat('dddd'); // Nama hari dalam bahasa Indonesia (Senin, Selasa, dst.)
-            
+
             // Mengambil data jumlah hadir dan tidak hadir
             $presentCount = $attendanceData->get($date, collect())->where('attstatus', 'N')->count();
             $absentCount = $attendanceData->get($date, collect())->where('attstatus', 'A')->count();
-            
+
             $presentData[] = $presentCount;
             $absentData[] = $absentCount;
         }
@@ -68,6 +68,6 @@ class attendanceController extends Controller
             ]
         ];
 
-		return view('hr/attendance/home',compact('menus','generated','enroll','present','absent','late','dataAbsensi'));
-	}
+        return view('hr/attendance/home', compact('menus', 'generated', 'enroll', 'present', 'absent', 'late', 'dataAbsensi'));
+    }
 }

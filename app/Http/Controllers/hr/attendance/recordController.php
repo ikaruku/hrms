@@ -1,7 +1,7 @@
 <?php
- 
+
 namespace App\Http\Controllers\hr\attendance;
- 
+
 use Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -13,19 +13,19 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
- 
+
 class recordController extends Controller
 {
     public function index(Request $request)
     {
         $menus = DB::table('syspermission')
-                    ->where('userid', Auth::user()->id)
-                    ->get()
-                    ->sortBy('menuname');
-        
+            ->where('userid', Auth::user()->id)
+            ->get()
+            ->sortBy('menuname');
+
         // Menambahkan filter berdasarkan status karyawan
         $empllist = DB::table('hr_empltable');
-    
+
         // Jika checkbox "Show All Employees" dicentang, tampilkan semua karyawan
         if ($request->has('active') && $request->active == 'on') {
             $empllist = $empllist->get(); // Ambil semua data karyawan
@@ -33,19 +33,19 @@ class recordController extends Controller
             // Jika checkbox tidak dicentang, hanya karyawan aktif yang ditampilkan
             $empllist = $empllist->where('status', 'active')->get();
         }
-    
+
         return view('hr/attendance/record', compact('empllist', 'menus'));
     }
-    
+
 
     public function indexdetail($id)
-	{
-        $menus = DB::table('syspermission')->where('userid',Auth::user()->id)->get()->sortBy('menuname');
-		$attendanceList = DB::table('hr_attendancerecord')->where('emplid',$id)->get();
-		return view('hr/attendance/attendancedetail',compact('attendanceList','menus'));
-	}
+    {
+        $menus = DB::table('syspermission')->where('userid', Auth::user()->id)->get()->sortBy('menuname');
+        $attendanceList = DB::table('hr_attendancerecord')->where('emplid', $id)->get();
+        return view('hr/attendance/attendancedetail', compact('attendanceList', 'menus'));
+    }
 
-	public function generateall(Request $request)
+    public function generateall(Request $request)
     {
         // Validasi input bulan dan tahun
         $request->validate([
@@ -70,17 +70,17 @@ class recordController extends Controller
 
         // Ambil semua karyawan yang memiliki schedule_id
         $employees = DB::table('hr_empltable')
-            ->where(function($query) use ($month, $year) {
+            ->where(function ($query) use ($month, $year) {
                 $query->whereMonth('leavedate', '>=', $month)
                     ->whereYear('leavedate', '>=', $year);
             })
-            ->orWhere(function($query) use ($month, $year) {
+            ->orWhere(function ($query) use ($month, $year) {
                 $query->where('status', 'active')
                     ->whereMonth('joindate', '<=', $month)
                     ->whereYear('joindate', '<=', $year);
             })
             ->get();
-            
+
         // Tentukan hari pertama dan terakhir di bulan yang dipilih
         $startOfMonth = Carbon::create($year, $month, 1);
         $endOfMonth = $startOfMonth->copy()->endOfMonth();
@@ -139,7 +139,7 @@ class recordController extends Controller
     }
 
     public function import(Request $request)
-    {   
+    {
         // Validasi file upload
         $request->validate([
             'frm_import' => 'required|mimes:xlsx,xls',
@@ -303,7 +303,7 @@ class recordController extends Controller
     {
         $year = $request->frml_year;
         $month = $request->frml_month;
-    
+
         // Ambil semua data karyawan
         //$karyawan = DB::table('hr_empltable')->where('status','Active')->orderBy('emplname', 'asc')->get();
         $karyawan = $records = DB::table('hr_attendancerecord')
@@ -313,20 +313,20 @@ class recordController extends Controller
             ->distinct()
             ->orderBy('emplname', 'asc')
             ->get();
-    
-    
+
+
         // Buat objek Spreadsheet
         $spreadsheet = new Spreadsheet();
-    
+
         // Set default sheet index
         $spreadsheet->removeSheetByIndex(0); // Hapus sheet default pertama
         $sheetIndex = 0;
-    
+
         foreach ($karyawan as $k) {
             // Tambahkan sheet baru untuk setiap karyawan
             $sheet = $spreadsheet->createSheet();
             $sheet->setTitle($k->emplname); // Nama sheet adalah nama karyawan
-    
+
             // Set header untuk sheet
             $sheet->setCellValue('A1', 'Tanggal')
                 ->setCellValue('B1', 'Hari')
@@ -336,15 +336,15 @@ class recordController extends Controller
                 ->setCellValue('F1', 'Actual In')
                 ->setCellValue('G1', 'Actual Out')
                 ->setCellValue('H1', 'Notes');
-    
+
             // Ambil absensi karyawan menggunakan query builder
             $absensi = DB::table('hr_attendancerecord')
-                        ->where('emplid', $k->emplid)
-                        ->whereMonth('attdate', $month)
-                        ->whereYear('attdate', $year)
-                        ->orderBy('attdate', 'asc')
-                        ->get();
-    
+                ->where('emplid', $k->emplid)
+                ->whereMonth('attdate', $month)
+                ->whereYear('attdate', $year)
+                ->orderBy('attdate', 'asc')
+                ->get();
+
             $row = 2; // Mulai dari baris ke-2
             $statusCount = [
                 'N' => 0,
@@ -359,11 +359,11 @@ class recordController extends Controller
                 'HD' => 0,
                 'A' => 0
             ];
-    
+
             foreach ($absensi as $a) {
                 // Cek apakah status absensi kosong, jika kosong set status ke 'Unknown'
                 $status = $a->attstatus;
-    
+
                 // Isi data absensi
                 $sheet->setCellValue('A' . $row, $a->attdate)
                     ->setCellValue('B' . $row, $a->day)
@@ -373,12 +373,12 @@ class recordController extends Controller
                     ->setCellValue('F' . $row, $a->actin1)
                     ->setCellValue('G' . $row, $a->actout1)
                     ->setCellValue('H' . $row, $a->notes);
-    
+
                 // Hitung status absensi
                 if (isset($statusCount[$status])) {
                     $statusCount[$status]++;
                 }
-    
+
                 $color = '';
                 // Tentukan warna berdasarkan status
                 if ($status == 'N') {
@@ -419,30 +419,30 @@ class recordController extends Controller
                 }
                 $row++;
             }
-    
+
             // Tambahkan summary di bawah data absensi (pindahkan ke kolom K dan L)
             $summaryRow = 1;
-    
+
             // Set summary for each status
             foreach ($statusCount as $status => $count) {
                 $sheet->setCellValue('K' . $summaryRow, 'Total ' . $status)   // Total status di kolom K
                     ->setCellValue('L' . $summaryRow, $count);
                 $summaryRow++;
             }
-    
+
             // Set sheet index
             $sheetIndex++;
         }
-    
+
         // Set writer untuk format Excel
         $writer = new Xlsx($spreadsheet);
-    
+
         // Simpan file Excel di server atau bisa dikirim langsung ke browser
         $filename = 'Absensi_Karyawan.xlsx';
         $path = storage_path('app/public/' . $filename);
-    
+
         $writer->save($path);
-    
+
         // Mengirim file untuk diunduh
         return response()->download($path)->deleteFileAfterSend(true);
     }
