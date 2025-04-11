@@ -2,8 +2,8 @@
 Dibangun menggunakan laravel
 
 ## Fitur
-✅ Employee Management
-✅ Attendance Management
+✅ Employee Management<br>
+✅ Attendance Management<br>
 ✅ Training Management (Development)
 
 ## Existing User
