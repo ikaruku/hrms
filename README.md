@@ -1,7 +1,7 @@
 ## HRMS - Human Resource Management
-Dibangun menggunakan laravel
+Built using laravel
 
-## Fitur
+## Feature
 ✅ Employee Management<br>
 ✅ Attendance Management<br>
 ✅ Training Management (Development)
